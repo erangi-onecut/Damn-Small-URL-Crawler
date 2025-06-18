@@ -35,7 +35,7 @@ def extractor(soup, host):
             external.append(link["href"])
         else:
             unknown.append(link["href"])
-    return all_links
+    return all_links + external + unknown
 
 
 def fuzzable_extract(linklist):
@@ -57,10 +57,12 @@ def xploit(link, host=None):
 def level2(linklist, host):
     final_list = list()
     for link in linklist:
+        if not link.startswith("http"):
+            continue
         for x in xploit(link, host):
             if x not in final_list:
                 final_list.append(x)
-                print("Appended", x)
+                # print("Appended", x)
         if link not in final_list:
             final_list.append(link)
     return final_list
@@ -68,9 +70,18 @@ def level2(linklist, host):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-u", "--url", help="root url", dest="url")
     parser.add_argument(
-        "-d", "--deepcrawl", help="crawl deaply", dest="deepcrawl", action="store_true"
+        "-u",
+        "--url",
+        help="root url",
+        dest="url",
+    )
+    parser.add_argument(
+        "-d",
+        "--deepcrawl",
+        help="crawl deaply",
+        dest="deepcrawl",
+        action="store_true",
     )
     parser.add_argument(
         "-f",
@@ -119,10 +130,10 @@ def main():
 
 
 if __name__ == "__main__":
-	results = main()
+    results = main()
 
-	# Output as JSON
-	if results:
-		print(json.dumps(results, indent=2))
-	else:
-		print(json.dumps({}))
+    # Output as JSON
+    if results:
+        print(json.dumps(results, indent=2))
+    else:
+        print(json.dumps({}))
